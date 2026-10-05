@@ -1,0 +1,12 @@
+# Optional in Phase 1 (nothing reads the DB yet). Needed from Phase 2+ for caching results.
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: earthpulse
+      POSTGRES_PASSWORD: earthpulse
+      POSTGRES_DB: earthpulse
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:

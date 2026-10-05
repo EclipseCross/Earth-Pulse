@@ -1,0 +1,75 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Earth Pulse backend",
+			"type": "shell",
+			"command": "backend\\.venv\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"uvicorn",
+				"app.main:app",
+				"--reload"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run Earth Pulse frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run Earth Pulse backend (fixed)",
+			"type": "shell",
+			"command": "backend\\.venv\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"uvicorn",
+				"app.main:app",
+				"--reload",
+				"--app-dir",
+				"backend"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run Earth Pulse frontend (fixed)",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"frontend",
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run Earth Pulse frontend fixed",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"frontend",
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

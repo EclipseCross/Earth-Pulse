@@ -1,0 +1,11 @@
+.env
+__pycache__/
+.venv/
+node_modules/
+.next/
+*.h5
+*.tif
+.cache/
+backend/data/
+data/*.db
+.pytest_cache/

@@ -1,0 +1,33 @@
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+:root { --ink:#0d1b24; --panel:#12252f; --line:#27414f; --bone:#e9e6da; --mute:#92a6b0; --amber:#f2b134; --teal:#43b9a6; --red:#e8765f; }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--ink); color: var(--bone); font: 15px/1.5 "Iowan Old Style", "Palatino Linotype", Georgia, serif; }
+.shell { display: grid; grid-template-columns: 380px 1fr; height: 100%; }
+.panel { background: var(--panel); border-right: 1px solid var(--line); padding: 20px; overflow-y: auto; }
+.map { height: 100%; width: 100%; }
+h1 { font-size: 34px; margin: 0; letter-spacing: -0.5px; }
+h3 { margin: 16px 0 4px; font-size: 16px; }
+.tag { color: var(--teal); margin: 0 0 18px; font-style: italic; }
+label { display: block; color: var(--mute); font-size: 13px; margin: 8px 0 3px; }
+input { width: 100%; background: var(--ink); color: var(--bone); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; font: inherit; }
+.hint, .foot, small, .origin { color: var(--mute); font-size: 12.5px; }
+.coords { font-variant-numeric: tabular-nums; color: var(--amber); margin: 4px 0 10px; }
+.types { display: grid; gap: 6px; margin: 12px 0; }
+.type { display: flex; justify-content: space-between; align-items: baseline; background: transparent; color: var(--bone); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; font: inherit; cursor: pointer; text-align: left; }
+.type.on { border-color: var(--amber); background: #1b2f38; }
+.dates { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.go { width: 100%; margin-top: 14px; padding: 11px; background: var(--amber); color: #1a1405; border: 0; border-radius: 4px; font: inherit; font-weight: 700; cursor: pointer; }
+.go:disabled { opacity: .4; cursor: not-allowed; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.busy { color: var(--teal); } .err { color: var(--red); } .note { color: var(--amber); font-size: 13px; }
+ul { list-style: none; padding: 0; margin: 8px 0; } li { padding: 6px 0; border-top: 1px solid var(--line); } li small { display: block; word-break: break-all; }
+.foot { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 10px; }
+@media (max-width: 800px) { .shell { grid-template-columns: 1fr; grid-template-rows: auto 55vh; height: auto; } .panel { border-right: 0; } }
+.go.alt { background: transparent; color: var(--amber); border: 1px solid var(--amber); margin-top: 8px; }
+.watches li { display: grid; gap: 2px; }
+.link { background: none; border: 0; color: var(--bone); font: inherit; text-align: left; padding: 0; cursor: pointer; text-decoration: underline; }
+.badge { background: var(--teal); color: #06201b; border-radius: 10px; padding: 0 8px; font-size: 12px; justify-self: start; }
+.row { display: flex; gap: 6px; margin-top: 4px; }
+.mini { background: transparent; color: var(--mute); border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; font: inherit; font-size: 12px; cursor: pointer; }
