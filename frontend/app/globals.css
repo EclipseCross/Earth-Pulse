@@ -31,3 +31,8 @@ ul { list-style: none; padding: 0; margin: 8px 0; } li { padding: 6px 0; border-
 .badge { background: var(--teal); color: #06201b; border-radius: 10px; padding: 0 8px; font-size: 12px; justify-self: start; }
 .row { display: flex; gap: 6px; margin-top: 4px; }
 .mini { background: transparent; color: var(--mute); border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; font: inherit; font-size: 12px; cursor: pointer; }
+.comparison-slider { position: relative; height: 96px; margin: 12px 0 6px; overflow: hidden; border: 1px solid var(--line); background: #1b3944; }
+.comparison-before, .comparison-after { position: absolute; inset: 0; display: grid; align-content: center; gap: 4px; padding: 12px; }
+.comparison-before { background: #315a62; }
+.comparison-after { z-index: 1; background: #8d584c; border-right: 2px solid var(--amber); overflow: hidden; white-space: nowrap; }
+.comparison-slider + label input { padding: 0; }

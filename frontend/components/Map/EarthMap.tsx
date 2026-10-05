@@ -5,9 +5,10 @@ import { useEffect, useRef } from "react";
 interface Props {
   selected: { lat: number; lon: number } | null;
   onSelect: (lat: number, lon: number) => void;
+  zones?: GeoJSON.FeatureCollection | null;
 }
 
-export default function EarthMap({ selected, onSelect }: Props) {
+export default function EarthMap({ selected, onSelect, zones }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const marker = useRef<maplibregl.Marker | null>(null);
@@ -45,6 +46,20 @@ export default function EarthMap({ selected, onSelect }: Props) {
     marker.current = new maplibregl.Marker({ color: "#f2b134" }).setLngLat([selected.lon, selected.lat]).addTo(map.current);
     map.current.flyTo({ center: [selected.lon, selected.lat], zoom: Math.max(map.current.getZoom(), 8) });
   }, [selected]);
+
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const source = m.getSource("change-zones") as maplibregl.GeoJSONSource | undefined;
+    if (source) source.setData(zones ?? { type: "FeatureCollection", features: [] });
+    else if (zones) {
+      m.addSource("change-zones", { type: "geojson", data: zones });
+      m.addLayer({ id: "change-zones-fill", type: "fill", source: "change-zones",
+        paint: { "fill-color": "#e8765f", "fill-opacity": 0.35 } });
+      m.addLayer({ id: "change-zones-line", type: "line", source: "change-zones",
+        paint: { "line-color": "#f2b134", "line-width": 2 } });
+    }
+  }, [zones]);
 
   return <div ref={el} className="map" aria-label="Interactive world map" />;
 }

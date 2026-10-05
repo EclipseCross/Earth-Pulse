@@ -4,8 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import ChangeTypeSelect from "@/components/ChangeType/ChangeTypeSelect";
 import ObservationList from "@/components/Analysis/ObservationList";
 import WatchList from "@/components/Watch/WatchList";
-import { analyzeChange, checkWatch, createWatch, deleteWatch, listWatches, readWatch, searchNisar, searchPlaces } from "@/services/api";
-import type { ChangeAnalysisResult, ChangeType, SearchResult, Watch } from "@/types";
+import { analyzeBackscatter, analyzeChange, analyzeGround, checkWatch, createWatch, deleteWatch, listWatches, readWatch, searchNisar, searchPlaces } from "@/services/api";
+import BackscatterSlider from "@/components/Analysis/BackscatterSlider";
+import type { BackscatterAnalysisResult, ChangeAnalysisResult, ChangeType, GroundAnalysisResult, SearchResult, Watch } from "@/types";
 
 const EarthMap = dynamic(() => import("@/components/Map/EarthMap"), { ssr: false });
 
@@ -20,6 +21,8 @@ export default function Home() {
   const [res, setRes] = useState<SearchResult | null>(null);
   const [analysisProduct, setAnalysisProduct] = useState("GCOV");
   const [analysis, setAnalysis] = useState<ChangeAnalysisResult | null>(null);
+  const [ground, setGround] = useState<GroundAnalysisResult | null>(null);
+  const [backscatter, setBackscatter] = useState<BackscatterAnalysisResult | null>(null);
   const [watches, setWatches] = useState<Watch[]>([]);
 
   const refresh = useCallback(() => listWatches().then(setWatches).catch(() => {}), []);
@@ -58,6 +61,30 @@ export default function Home() {
     } catch (e) { setErr((e as Error).message); } finally { setBusy(""); }
   }
 
+  async function runGround() {
+    if (!pt) return;
+    setErr(""); setGround(null);
+    try {
+      setBusy("Searching NISAR");
+      setBusy("Retrieving observations");
+      const response = await analyzeGround(pt.lat, pt.lon);
+      setBusy("Processing radar data");
+      setGround(response.result);
+      setBusy("Detecting surface change");
+    } catch (e) { setErr((e as Error).message); } finally { setBusy(""); }
+  }
+
+  async function runBackscatter() {
+    if (!pt || (analysisProduct !== "GCOV" && analysisProduct !== "GSLC")) return;
+    setErr(""); setBackscatter(null);
+    try {
+      setBusy("Searching paired NISAR acquisitions");
+      const response = await analyzeBackscatter(pt.lat, pt.lon, analysisProduct);
+      setBusy("Converting radar backscatter to dB");
+      setBackscatter(response.result);
+    } catch (e) { setErr((e as Error).message); } finally { setBusy(""); }
+  }
+
   return (
     <main className="shell">
       <aside className="panel">
@@ -90,6 +117,9 @@ export default function Home() {
         <button className="go alt" disabled={!pt || !start || !end || !!busy} onClick={runAnalysis}>
           Analyze change between dates
         </button>
+        {(analysisProduct === "GCOV" || analysisProduct === "GSLC") &&
+          <button className="go" disabled={!pt || !!busy} onClick={runBackscatter}>Analyze backscatter change</button>}
+        {analysisProduct === "GUNW" && <button className="go" disabled={!pt || !!busy} onClick={runGround}>Analyze ground movement</button>}
         {busy && <p className="busy">{busy}</p>}
         {err && <p className="err" role="alert">{err}</p>}
         {res && <ObservationList result={res} />}
@@ -99,6 +129,18 @@ export default function Home() {
           <small>{analysis.baseline_date} → {analysis.comparison_date} · {analysis.metric}: {analysis.value.toFixed(3)} {analysis.unit}</small>
           <p className="hint">This is an automated screening result, not a confirmed event. Product-specific quality and geolocation masks are still required.</p>
         </section>}
+        {ground && <section className="analysis-result" aria-live="polite">
+          <h3>Ground movement screening</h3>
+          <p>Line-of-sight displacement relative to a reference area. Not vertical motion and not structural damage.</p>
+          {ground.status === "insufficient" ? <p className="note">{ground.message}</p> : <>
+            <p>Mean {ground.mean?.toFixed(2)} mm · range {ground.min?.toFixed(2)} to {ground.max?.toFixed(2)} mm · affected {ground.affected_area_km2?.toFixed(3)} km²</p>
+            <p>Valid {(ground.valid_fraction * 100).toFixed(1)}% · coherence {ground.coherence_mean?.toFixed(2)} · confidence {ground.confidence}</p>
+          </>}
+          <small>{ground.reference_acquisition_date} → {ground.secondary_acquisition_date} · {ground.sign_convention}</small>
+          <p className="hint">NASA-ISRO NISAR · GUNW · Earth Pulse pipeline</p>
+          <ul>{ground.limitations.map((item) => <li key={item}><small>{item}</small></li>)}</ul>
+        </section>}
+        {backscatter && <BackscatterSlider result={backscatter} />}
         <h3>Watched areas</h3>
         <p className="hint">Checked automatically for new NISAR observations. NISAR products appear 1 to 3 days after acquisition, so this is near-real-time, not live.</p>
         <WatchList watches={watches} onFocus={(w) => setPt({ lat: w.lat, lon: w.lon })}
@@ -107,7 +149,7 @@ export default function Home() {
           onDelete={(id) => act(() => deleteWatch(id), "Removing...")} />
         <p className="foot">Independent Space Apps project. Not an official NASA application. Change analysis is an automated screening result and not a confirmed event.</p>
       </aside>
-      <EarthMap selected={pt} onSelect={(lat, lon) => setPt({ lat, lon })} />
+      <EarthMap selected={pt} onSelect={(lat, lon) => setPt({ lat, lon })} zones={ground?.zones} />
     </main>
   );
 }

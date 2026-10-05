@@ -7,3 +7,4 @@ earthaccess>=0.9
 h5py>=3.11
 numpy>=1.26
 pytest>=8.0
+pyproj>=3.6

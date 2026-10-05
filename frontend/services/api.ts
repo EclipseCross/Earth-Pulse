@@ -1,4 +1,4 @@
-import type { ChangeAnalysisResult, ChangeType, Place, SearchResult, Watch } from "@/types";
+import type { BackscatterAnalysisResult, ChangeAnalysisResult, ChangeType, GroundAnalysisResult, Place, SearchResult, Watch } from "@/types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -27,6 +27,11 @@ export const searchNisar = (lat: number, lon: number, changeType: ChangeType, st
 };
 export const analyzeChange = (lat: number, lon: number, product: string, start: string, end: string) =>
   send<ChangeAnalysisResult>("POST", "/api/analysis/compare", { lat, lon, product, start, end });
+export const analyzeGround = (lat: number, lon: number) =>
+  send<{ analysis_id: string; result: GroundAnalysisResult }>("POST", "/api/analysis", { lat, lon, change_type: "ground" });
+export const analyzeBackscatter = (lat: number, lon: number, product: "GCOV" | "GSLC", before?: string, after?: string, polarization?: string) =>
+  send<{ analysis_id: string; result: BackscatterAnalysisResult }>("POST", "/api/analysis/backscatter",
+    { lat, lon, product, before_granule_id: before, after_granule_id: after, polarization });
 
 async function send<T>(method: string, path: string, body?: unknown): Promise<T> {
   let r: Response;

@@ -19,6 +19,24 @@ export interface ChangeAnalysisResult {
   interpretation: string;
   caveats: string[];
 }
+export interface GroundAnalysisResult {
+  change_type: string; measurement: string; unit: string; mean: number | null; median: number | null;
+  max: number | null; min: number | null; affected_area_km2: number | null; threshold_mm: number;
+  coherence_mean: number | null; coherence_threshold: number; valid_fraction: number;
+  reference_method: string; reference_value_mm: number | null; granule_ids: string[];
+  reference_acquisition_date: string; secondary_acquisition_date: string; track: string; frame: string;
+  orbit_direction: string; wavelength_m: number; sign_convention: string; processing_notes: string[];
+  limitations: string[]; confidence: string; confidence_reasons: string[]; status: string;
+  message: string | null; zones: GeoJSON.FeatureCollection;
+}
+export interface BackscatterAnalysisResult {
+  change_type: string; product: string; measurement: string; unit: string; polarization: string;
+  before_granule_id: string; after_granule_id: string; before_date: string | null; after_date: string | null;
+  mean_db_change: number | null; affected_area_km2: number | null; threshold_db: number;
+  valid_fraction: number; statistical_rule: string; zones: GeoJSON.FeatureCollection;
+  status: string; message: string | null; processing_notes: string[]; limitations: string[];
+  before_overlay_url: string | null; after_overlay_url: string | null;
+}
 export interface Place { name: string; lat: number; lon: number }
 export interface Watch {
   id: number; lat: number; lon: number; change_type: ChangeType; last_checked: number | null; last_error: string | null;

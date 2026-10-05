@@ -7,5 +7,6 @@ node_modules/
 *.tif
 .cache/
 backend/data/
+.env.example
 data/*.db
 .pytest_cache/
