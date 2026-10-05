@@ -34,6 +34,12 @@ def resolve_short_names(collections: list[dict]) -> dict[str, list[str]]:
         if not sn or "nisar" not in title:
             continue
         for prod, kw in TITLE_KEYWORDS.items():
+            # Level-1 RUNW/RSLC/ROFF records are not substitutes for the
+            # Level-2 products used by these analyses.
+            if prod in {"GUNW", "GSLC", "GOFF"} and sn.upper().startswith(
+                ("NISAR_L1_RUNW", "NISAR_L1_RSLC", "NISAR_L1_ROFF")
+            ):
+                continue
             if kw in title and sn not in out[prod]:
                 out[prod].append(sn)
     return out

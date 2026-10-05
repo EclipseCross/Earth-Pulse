@@ -21,6 +21,21 @@ def test_resolver_matches_by_title_and_ignores_non_nisar():
     assert r["GSLC"] == []  # absent in catalog -> empty, never guessed
 
 
+def test_resolver_excludes_level_one_products_from_level_two_workflows():
+    catalog = [
+        {"short_name": "NISAR_L1_RUNW_PROVISIONAL_V1", "title": "NISAR Unwrapped Interferogram"},
+        {"short_name": "NISAR_L1_RSLC_PROVISIONAL_V1", "title": "NISAR Single Look Complex"},
+        {"short_name": "NISAR_L1_ROFF_PROVISIONAL_V1", "title": "NISAR Pixel Offsets"},
+        {"short_name": "NISAR_L2_GUNW_PROVISIONAL_V1", "title": "NISAR Unwrapped Interferogram"},
+    ]
+
+    resolved = resolve_short_names(catalog)
+
+    assert resolved["GUNW"] == ["NISAR_L2_GUNW_PROVISIONAL_V1"]
+    assert resolved["GSLC"] == []
+    assert resolved["GOFF"] == []
+
+
 def test_live_search_accepts_granule_size_property(monkeypatch):
     class FakeGranule:
         size = 12.5
