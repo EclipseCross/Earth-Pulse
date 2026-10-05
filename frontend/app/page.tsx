@@ -71,9 +71,10 @@ export default function Home() {
         {pt && <p className="coords">{pt.lat.toFixed(4)}, {pt.lon.toFixed(4)}</p>}
         <ChangeTypeSelect value={type} onChange={setType} />
         <div className="dates">
-          <label>From <input type="date" value={start} onChange={(e) => setStart(e.target.value)} /></label>
-          <label>To <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} /></label>
+          <label>From <input type="date" min="2026-06-17" value={start} onChange={(e) => setStart(e.target.value)} /></label>
+          <label>To <input type="date" min="2026-06-17" value={end} onChange={(e) => setEnd(e.target.value)} /></label>
         </div>
+        <p className="hint">Public NISAR records currently begin around June 17, 2026.</p>
         <button className="go" disabled={!pt || !!busy} onClick={run}>Search NISAR observations</button>
         <button className="go alt" disabled={!pt || !!busy}
           onClick={() => pt && act(() => createWatch(pt.lat, pt.lon, type), "Recording baseline observations...")}>Watch this area</button>

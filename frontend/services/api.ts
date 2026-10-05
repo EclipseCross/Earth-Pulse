@@ -3,7 +3,12 @@ import type { ChangeAnalysisResult, ChangeType, Place, SearchResult, Watch } fro
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(`${BASE}${path}`);
+  let r: Response;
+  try {
+    r = await fetch(`${BASE}${path}`);
+  } catch {
+    throw new Error("Earth Pulse backend is offline. Start the backend at http://localhost:8000 and try again.");
+  }
   if (!r.ok) {
     const body = await r.json().catch(() => ({}));
     throw new Error(body.detail ?? `Request failed (${r.status})`);
@@ -24,7 +29,12 @@ export const analyzeChange = (lat: number, lon: number, product: string, start: 
   send<ChangeAnalysisResult>("POST", "/api/analysis/compare", { lat, lon, product, start, end });
 
 async function send<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const r = await fetch(`${BASE}${path}`, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  let r: Response;
+  try {
+    r = await fetch(`${BASE}${path}`, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  } catch {
+    throw new Error("Earth Pulse backend is offline. Start the backend at http://localhost:8000 and try again.");
+  }
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail ?? `Request failed (${r.status})`);
   return r.json();
 }
